@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">NikeStore</string>
+    <string name="empty_username">Username cannot be empty.</string>
+    <string name="username_must_be_at_least_6">Username must be at least 6 characters long.</string>
+    <string name="empty_password">Password cannot be empty.</string>
+    <string name="password_must_be_at_least_8">Password must be at least 8 characters long.</string>
+    <string name="password_upper">Password must contain at least one uppercase letter.</string>
+    <string name="password_lower">Password must contain at least one lowercase letter.</string>
+    <string name="password_digit">Password must contain at least one digit.</string>
+    <string name="empty_email">E-mail cannot be empty.</string>
+    <string name="invalid_email">Please enter a valid e-mail address.</string>
+    <string name="empty_phone">PhoneNumber cannot be empty.</string>
+    <string name="invalid_phone">PhoneNumber must start with country code (+).</string>
+    <string name="empty_string" />
+</resources>

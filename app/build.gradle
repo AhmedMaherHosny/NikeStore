@@ -1,0 +1,73 @@
+plugins {
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+    id 'kotlin-kapt'
+    id("com.google.dagger.hilt.android")
+}
+
+android {
+    namespace 'com.example.nikestore'
+    compileSdk Config.compileSdkVersion
+
+    defaultConfig {
+        applicationId "com.example.nikestore"
+        minSdk Config.minSdkVersion
+        targetSdk Config.targetSdkVersion
+        versionCode Versions.versionCode
+        versionName Versions.versionName
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        vectorDrawables {
+            useSupportLibrary true
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_17.toString()
+    }
+    buildFeatures {
+        compose true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion Versions.kotlinCompilerExtensionVersion
+    }
+    packagingOptions {
+        resources {
+            excludes += '/META-INF/{AL2.0,LGPL2.1}'
+        }
+    }
+}
+
+dependencies {
+
+    implementation project(':core')
+    implementation project(':ui')
+    implementation project(':presenter')
+    implementation project(':local')
+    implementation project(':remote')
+    implementation project(':domain')
+
+    //hilt
+    implementation(Libs.hiltAndroid)
+    implementation (Libs.hiltNavigation)
+    implementation (Libs.hiltNavigationCompose)
+    kapt(Libs.hiltAndroidCompiler)
+
+    //timber
+    implementation(Libs.timber)
+
+}
+// Allow references to generated code
+kapt {
+    correctErrorTypes = true
+}
