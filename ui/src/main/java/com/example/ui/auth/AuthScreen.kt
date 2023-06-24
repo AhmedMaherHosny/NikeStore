@@ -100,6 +100,22 @@ fun AuthScreen(
             )
         }
     }
+    val onGoogleClicked = remember {
+        {
+            keyboardController?.hide()
+            viewModel.setEvent(
+                AuthEvent.OnGoogleClicked
+            )
+        }
+    }
+    val onFacebookClicked = remember {
+        {
+            keyboardController?.hide()
+            viewModel.setEvent(
+                AuthEvent.OnFacebookClicked
+            )
+        }
+    }
     var currentTab by remember { mutableStateOf(AuthTaps.Login) }
     val nikeLogoPainter = rememberAsyncImagePainter(R.drawable.nike_logo)
     val authImagePainter = rememberAsyncImagePainter(R.drawable.auth_image)
@@ -204,20 +220,27 @@ fun AuthScreen(
                     icon = R.drawable.google_ic,
                     text = "Google",
                     shape = RoundedCornerShape(10.dp)
-                ) {
-                    // google login click
-                }
+                ) { onGoogleClicked() }
                 SocialMediaItem(
                     modifier = Modifier,
                     icon = R.drawable.facebook_ic,
                     text = "Facebook",
                     shape = RoundedCornerShape(10.dp)
-                ) {
-                    // facebook login click
-                }
+                ) { onFacebookClicked() }
             }
         }
 
+    }
+    if (loginViewState.isNetworkError || registerViewState.isNetworkError) {
+        Surface(
+            modifier = Modifier
+                .fillMaxSize(),
+            color = Color.Black.copy(alpha = 0.5f)
+        ) {
+            Box(modifier = Modifier.fillMaxSize()) {
+                CircularProgressIndicator(Modifier.align(Alignment.Center))
+            }
+        }
     }
     if (loginViewState.isLoading || registerViewState.isLoading) {
         Surface(

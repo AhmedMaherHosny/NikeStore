@@ -35,5 +35,10 @@ object Libs {
     const val coil = "io.coil-kt:coil-compose:${Versions.coil}"
     const val countryCodePicker = "com.github.togisoft:jetpack_compose_country_code_picker:${Versions.countryCodePicker}"
     const val constraintLayout = "androidx.constraintlayout:constraintlayout-compose:${Versions.constraintLayout}"
-
+    const val firebaseBom = "com.google.firebase:firebase-bom:${Versions.firebaseBom}"
+    const val firebaseAnalytics = "com.google.firebase:firebase-analytics-ktx"
+    const val firebaseAuth = "com.google.firebase:firebase-auth-ktx"
+    const val firebaseAuthGoogle = "com.google.android.gms:play-services-auth:${Versions.firebaseAuthGoogle}"
+    const val firebaseFirestore = "com.google.firebase:firebase-firestore-ktx"
+    const val firebaseStorage = "com.google.firebase:firebase-storage-ktx"
 }

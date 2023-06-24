@@ -9,9 +9,11 @@ import com.example.presenter.auth.AuthEvent
 import com.example.presenter.auth.states.LoginViewState
 import com.example.presenter.auth.states.RegisterViewState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 @HiltViewModel
@@ -28,6 +30,7 @@ class AuthViewModel @Inject constructor(
 
     init {
         subscribeEvents()
+
     }
 
     private fun subscribeEvents() {
@@ -49,13 +52,19 @@ class AuthViewModel @Inject constructor(
             }
 
             AuthEvent.OnGoogleClicked -> {
-
+                google()
             }
 
             AuthEvent.OnFacebookClicked -> {
-
+                facebook()
             }
         }
+    }
+
+    private fun facebook() {
+    }
+
+    private fun google() {
     }
 
     private fun login() {

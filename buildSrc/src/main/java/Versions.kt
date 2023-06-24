@@ -31,4 +31,6 @@ object Versions {
     const val coil = "2.4.0"
     const val countryCodePicker = "1.1.4"
     const val constraintLayout = "1.1.0-alpha10"
+    const val firebaseBom = "32.1.1"
+    const val firebaseAuthGoogle = "20.5.0"
 }
