@@ -40,8 +40,8 @@ dependencies {
 
     //hilt
     implementation(Libs.hiltAndroid)
-    implementation (Libs.hiltNavigation)
-    implementation (Libs.hiltNavigationCompose)
+    implementation(Libs.hiltNavigation)
+    implementation(Libs.hiltNavigationCompose)
     kapt(Libs.hiltAndroidCompiler)
 
     //room
@@ -49,6 +49,12 @@ dependencies {
     annotationProcessor(Libs.roomCompilerAnnotationProcessor)
     ksp(Libs.roomCompilerKsp)
     implementation(Libs.roomPaging3)
+
+    //datastore
+    implementation(Libs.datastore)
+
+    //Gson
+    implementation(Libs.gson)
 }
 // Allow references to generated code
 kapt {

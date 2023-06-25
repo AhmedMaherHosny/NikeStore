@@ -5,28 +5,30 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.core.StateErrorType
 import com.example.presenter.auth.AuthEvent
 import com.example.presenter.auth.states.LoginViewState
 import com.example.presenter.auth.states.RegisterViewState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 @HiltViewModel
 class AuthViewModel @Inject constructor(
-
 ) : ViewModel() {
     var loginViewState by mutableStateOf(LoginViewState())
         private set
     var registerViewState by mutableStateOf(RegisterViewState())
         private set
 
-    private val _event = MutableSharedFlow<AuthEvent>()
-    private val event get() = _event.asSharedFlow()
+    private val _eventClicks = MutableSharedFlow<AuthEvent>()
+    private val eventClicks get() = _eventClicks.asSharedFlow()
+
+    private val _eventError = MutableSharedFlow<StateErrorType>()
+    val eventError get() = _eventError.asSharedFlow()
+
 
     init {
         subscribeEvents()
@@ -35,7 +37,7 @@ class AuthViewModel @Inject constructor(
 
     private fun subscribeEvents() {
         viewModelScope.launch {
-            event.collect {
+            eventClicks.collect {
                 handleEvents(it)
             }
         }
@@ -61,10 +63,12 @@ class AuthViewModel @Inject constructor(
         }
     }
 
-    private fun facebook() {
+    private fun google() {
+
     }
 
-    private fun google() {
+    private fun facebook() {
+
     }
 
     private fun login() {
@@ -77,9 +81,15 @@ class AuthViewModel @Inject constructor(
         registerViewState = registerViewState.copy(isLoading = false)
     }
 
-    fun setEvent(event: AuthEvent) {
+    fun setEventClicks(event: AuthEvent) {
         viewModelScope.launch {
-            _event.emit(event)
+            _eventClicks.emit(event)
+        }
+    }
+
+    private fun setEventError(event: StateErrorType) {
+        viewModelScope.launch {
+            _eventError.emit(event)
         }
     }
 }

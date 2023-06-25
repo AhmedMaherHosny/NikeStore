@@ -41,4 +41,6 @@ object Libs {
     const val firebaseAuthGoogle = "com.google.android.gms:play-services-auth:${Versions.firebaseAuthGoogle}"
     const val firebaseFirestore = "com.google.firebase:firebase-firestore-ktx"
     const val firebaseStorage = "com.google.firebase:firebase-storage-ktx"
+    const val lottieCompose = "com.airbnb.android:lottie-compose:${Versions.lottieCompose}"
+    const val datastore = "androidx.datastore:datastore-preferences:${Versions.datastore}"
 }

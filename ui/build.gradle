@@ -95,6 +95,9 @@ dependencies {
 
     //constraint layout
     implementation(Libs.constraintLayout)
+
+    //lottie
+    implementation(Libs.lottieCompose)
 }
 // Allow references to generated code
 kapt {

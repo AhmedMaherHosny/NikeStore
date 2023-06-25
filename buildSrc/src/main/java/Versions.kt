@@ -33,4 +33,6 @@ object Versions {
     const val constraintLayout = "1.1.0-alpha10"
     const val firebaseBom = "32.1.1"
     const val firebaseAuthGoogle = "20.5.0"
+    const val lottieCompose = "6.0.1"
+    const val datastore = "1.0.0"
 }

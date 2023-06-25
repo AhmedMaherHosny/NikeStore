@@ -67,6 +67,9 @@ dependencies {
     //timber
     implementation(Libs.timber)
 
+    //Gson
+    implementation(Libs.gson)
+
 }
 // Allow references to generated code
 kapt {

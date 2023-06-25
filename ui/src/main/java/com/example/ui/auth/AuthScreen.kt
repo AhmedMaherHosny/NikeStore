@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
@@ -23,13 +22,15 @@ import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.BottomCenter
+import androidx.compose.ui.Alignment.Companion.Center
 import androidx.compose.ui.Alignment.Companion.TopStart
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -39,6 +40,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberAsyncImagePainter
+import com.example.core.StateErrorType
 import com.example.presenter.auth.AuthEvent
 import com.example.presenter.auth.viewmodels.AuthViewModel
 import com.example.ui.R
@@ -47,9 +49,13 @@ import com.example.ui.auth.components.SocialMediaItem
 import com.example.ui.auth.enums.AuthTaps
 import com.example.ui.auth.taps.LoginTap
 import com.example.ui.auth.taps.RegisterTap
+import com.example.ui.common.components.ErrorDialog
+import com.example.ui.common.components.LoadingAnimation
+import com.example.ui.common.components.LostConnectionErrorDialog
 import com.example.ui.theme.spacing
 import com.example.ui.utils.modifyTap
 import com.example.ui.utils.paddingWithPercentage
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -65,6 +71,26 @@ fun AuthScreen(
     val keyboardController = LocalSoftwareKeyboardController.current
     val loginViewState = viewModel.loginViewState
     val registerViewState = viewModel.registerViewState
+    val eventError = viewModel.eventError
+    var authErrorDialog by remember { mutableStateOf(false) }
+    var lostConnectionErrorDialog by remember { mutableStateOf(false) }
+    LaunchedEffect(key1 = eventError) {
+        eventError.collect { error ->
+            when (error) {
+                StateErrorType.AUTHENTICATION_FAILED -> {
+                    authErrorDialog = true
+                }
+
+                StateErrorType.NETWORK_ERROR -> {
+                    lostConnectionErrorDialog = true
+                }
+
+                else -> {
+                    // Handle other error types if needed
+                }
+            }
+        }
+    }
     val isButtonEnabledWhileLogin by remember(
         loginViewState.email.text,
         loginViewState.password.text
@@ -87,7 +113,7 @@ fun AuthScreen(
     val onLoginClicked = remember {
         {
             keyboardController?.hide()
-            viewModel.setEvent(
+            viewModel.setEventClicks(
                 AuthEvent.OnLoginClicked
             )
         }
@@ -95,7 +121,7 @@ fun AuthScreen(
     val onRegisterClicked = remember {
         {
             keyboardController?.hide()
-            viewModel.setEvent(
+            viewModel.setEventClicks(
                 AuthEvent.OnRegisterClicked
             )
         }
@@ -103,7 +129,7 @@ fun AuthScreen(
     val onGoogleClicked = remember {
         {
             keyboardController?.hide()
-            viewModel.setEvent(
+            viewModel.setEventClicks(
                 AuthEvent.OnGoogleClicked
             )
         }
@@ -111,7 +137,7 @@ fun AuthScreen(
     val onFacebookClicked = remember {
         {
             keyboardController?.hide()
-            viewModel.setEvent(
+            viewModel.setEventClicks(
                 AuthEvent.OnFacebookClicked
             )
         }
@@ -231,25 +257,33 @@ fun AuthScreen(
         }
 
     }
-    if (loginViewState.isNetworkError || registerViewState.isNetworkError) {
-        Surface(
-            modifier = Modifier
-                .fillMaxSize(),
-            color = Color.Black.copy(alpha = 0.5f)
-        ) {
-            Box(modifier = Modifier.fillMaxSize()) {
-                CircularProgressIndicator(Modifier.align(Alignment.Center))
-            }
+    if (authErrorDialog) {
+        ErrorDialog {
+            authErrorDialog = !authErrorDialog
         }
     }
+    if (lostConnectionErrorDialog) {
+        LostConnectionErrorDialog {
+            lostConnectionErrorDialog = !lostConnectionErrorDialog
+        }
+    }
+
     if (loginViewState.isLoading || registerViewState.isLoading) {
+        val systemUiController = rememberSystemUiController()
         Surface(
             modifier = Modifier
                 .fillMaxSize(),
-            color = Color.Black.copy(alpha = 0.5f)
+            color = MaterialTheme.colorScheme.background
         ) {
+            SideEffect {
+                systemUiController.setSystemBarsColor(
+                    color = Color.White,
+                )
+            }
             Box(modifier = Modifier.fillMaxSize()) {
-                CircularProgressIndicator(Modifier.align(Alignment.Center))
+                LoadingAnimation(modifier = Modifier
+                    .size(150.dp)
+                    .align(Center))
             }
         }
     }
