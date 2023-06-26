@@ -39,7 +39,7 @@ class FirebaseRepositoryImpl @Inject constructor(
     override suspend fun addUserToFireStore(appUserDomainModel: AppUserDomainModel) =
         suspendCoroutine { continuation ->
             val usersCollection = firebaseFireStore.collection(COLLECTION_OF_USERS)
-            val userDocument = usersCollection.document(appUserDomainModel.uid!!)
+            val userDocument = usersCollection.document(appUserDomainModel.id!!)
             userDocument.set(appUserDomainModel.toAppUserRemoteModel())
                 .addOnSuccessListener {
                     continuation.resume(appUserDomainModel)

@@ -101,13 +101,12 @@ class AuthViewModel @Inject constructor(
                 registerViewState.email.text.value,
                 registerViewState.password.text.value
             ).copy(
-                username = registerViewState.username.text.value,
-                phone = registerViewState.phoneNumber.text.value
+                name = registerViewState.username.text.value,
+                password = registerViewState.password.text.value,
+                phone = registerViewState.phoneNumber.text.value,
             )
             val appUserDomainModel = addUserToFireStoreUseCase(authUser)
             writeUserDataToDatastoreUseCase(USER_MODEL, appUserDomainModel)
-            Timber.e(appUserDomainModel.toString())
-            Timber.e(readUserDataFromDatastoreUseCase(USER_MODEL).toString())
             registerViewState = registerViewState.copy(isLoading = false)
         }
     }

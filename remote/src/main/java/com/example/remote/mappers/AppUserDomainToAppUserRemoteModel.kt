@@ -5,9 +5,10 @@ import com.example.remote.models.AppUserRemoteModel
 
 fun AppUserDomainModel.toAppUserRemoteModel(): AppUserRemoteModel {
     return AppUserRemoteModel(
-        uid = uid,
+        id = id,
         email = email,
-        username = username,
+        name = name,
+        password = password,
         phone = phone,
         avatar = avatar
     )

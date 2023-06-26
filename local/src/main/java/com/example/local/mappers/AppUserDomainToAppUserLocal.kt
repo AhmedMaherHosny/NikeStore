@@ -3,12 +3,13 @@ package com.example.local.mappers
 import com.example.domain.models.AppUserDomainModel
 import com.example.local.models.AppUserLocalModel
 
-fun AppUserLocalModel.toAppUserDomain(): AppUserDomainModel {
-    return AppUserDomainModel(
-        uid = uid,
-        username = username,
+fun AppUserDomainModel.toAppUserLocal(): AppUserLocalModel {
+    return AppUserLocalModel(
+        id = id,
+        name = name,
         email = email,
         phone = phone,
-        avatar = avatar
+        avatar = avatar,
+        isAdmin = isAdmin
     )
 }

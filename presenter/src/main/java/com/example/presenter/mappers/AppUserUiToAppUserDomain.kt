@@ -5,10 +5,11 @@ import com.example.presenter.models.AppUserUiModel
 
 fun AppUserUiModel.toAppUserDomainModel(): AppUserDomainModel {
     return AppUserDomainModel(
-        uid = uid,
-        username = username,
+        id = id,
+        name = name,
         email = email,
         phone = phone,
-        avatar = avatar
+        avatar = avatar,
+        isAdmin = isAdmin
     )
 }
