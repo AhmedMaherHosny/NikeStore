@@ -5,9 +5,9 @@ import com.example.presenter.models.AppUserUiModel
 
 fun AppUserUiModel.toAppUserDomainModel(): AppUserDomainModel {
     return AppUserDomainModel(
+        uid = uid,
         username = username,
         email = email,
-        password = password,
         phone = phone,
         avatar = avatar
     )

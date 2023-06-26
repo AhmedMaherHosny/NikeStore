@@ -44,6 +44,15 @@ dependencies {
 
     //timber
     implementation(Libs.timber)
+
+    //firebase
+    implementation platform(Libs.firebaseBom)
+    implementation(Libs.firebaseAnalytics)
+    implementation(Libs.firebaseAuth)
+    implementation(Libs.firebaseAuthGoogle)
+    implementation(Libs.firebaseFirestore)
+    implementation(Libs.firebaseStorage)
+
 }
 // Allow references to generated code
 kapt {

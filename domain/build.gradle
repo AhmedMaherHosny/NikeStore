@@ -40,6 +40,14 @@ dependencies {
     implementation (Libs.hiltNavigation)
     implementation (Libs.hiltNavigationCompose)
     kapt(Libs.hiltAndroidCompiler)
+
+    //firebase
+    implementation platform(Libs.firebaseBom)
+    implementation(Libs.firebaseAnalytics)
+    implementation(Libs.firebaseAuth)
+    implementation(Libs.firebaseAuthGoogle)
+    implementation(Libs.firebaseFirestore)
+    implementation(Libs.firebaseStorage)
 }
 // Allow references to generated code
 kapt {

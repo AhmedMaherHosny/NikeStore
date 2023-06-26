@@ -79,7 +79,7 @@ fun LostConnectionErrorDialog(
                 )
                 Spacer(modifier = Modifier.height(MaterialTheme.spacing.semiLarge))
                 Text(
-                    text = "You're offline.",
+                    text = "No internet connection, you're offline.",
                     fontSize = 17.sp,
                     color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.4f)
                 )

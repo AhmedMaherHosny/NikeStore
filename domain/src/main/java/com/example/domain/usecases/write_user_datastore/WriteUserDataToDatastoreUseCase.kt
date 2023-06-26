@@ -7,7 +7,6 @@ import javax.inject.Inject
 class WriteUserDataToDatastoreUseCase @Inject constructor(
     private val repository: DatastoreRepository
 ) {
-    suspend operator fun invoke(key: String, value: AppUserDomainModel) {
+    suspend operator fun invoke(key: String, value: AppUserDomainModel) =
         repository.writeUserModel(key, value)
-    }
 }

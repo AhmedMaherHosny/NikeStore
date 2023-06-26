@@ -6,7 +6,6 @@ import javax.inject.Inject
 class DeleteUserDataFromDatastoreUseCase @Inject constructor(
     private val repository: DatastoreRepository
 ) {
-    suspend operator fun invoke(key: String) {
+    suspend operator fun invoke(key: String) =
         repository.deleteUserModel(key)
-    }
 }

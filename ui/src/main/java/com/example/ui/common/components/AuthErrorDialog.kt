@@ -77,7 +77,7 @@ fun ErrorDialog(
                 )
                 Spacer(modifier = Modifier.height(MaterialTheme.spacing.semiLarge))
                 Text(
-                    text = "E-mail or password isn't correct.",
+                    text = "Invalid email or password.",
                     fontSize = 17.sp,
                     color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.4f)
                 )
