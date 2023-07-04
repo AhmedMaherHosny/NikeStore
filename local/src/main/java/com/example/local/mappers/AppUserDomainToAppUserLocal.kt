@@ -5,10 +5,11 @@ import com.example.local.models.AppUserLocalModel
 
 fun AppUserDomainModel.toAppUserLocal(): AppUserLocalModel {
     return AppUserLocalModel(
-        username = username,
+        id = id,
+        name = name,
         email = email,
-        password = password,
         phone = phone,
-        avatar = avatar
+        avatar = avatar,
+        isAdmin = isAdmin
     )
 }

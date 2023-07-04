@@ -9,7 +9,7 @@ import androidx.datastore.preferences.preferencesDataStore
 import com.example.core.Constants.NIKE_PREFERENCES
 import com.example.domain.models.AppUserDomainModel
 import com.example.domain.repository.local.DatastoreRepository
-import com.example.local.mappers.toAppUser
+import com.example.local.mappers.toAppUserDomain
 import com.example.local.mappers.toAppUserLocal
 import com.example.local.models.AppUserLocalModel
 import com.google.gson.Gson
@@ -35,7 +35,7 @@ class DatastoreRepositoryImpl @Inject constructor(
         val preferences = context.dataStore.data.first()
         val serializedData = preferences[preferencesKey]
         return if (serializedData != null)
-            gson.fromJson(serializedData, AppUserLocalModel::class.java).toAppUser()
+            gson.fromJson(serializedData, AppUserLocalModel::class.java).toAppUserDomain()
         else
             null
     }

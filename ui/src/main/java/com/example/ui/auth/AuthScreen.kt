@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -39,9 +41,11 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.navOptions
 import coil.compose.rememberAsyncImagePainter
-import com.example.core.StateErrorType
+import com.example.core.base.StateErrorType
 import com.example.presenter.auth.AuthEvent
+import com.example.presenter.auth.AuthNavigator
 import com.example.presenter.auth.viewmodels.AuthViewModel
 import com.example.ui.R
 import com.example.ui.auth.components.OrSeparate
@@ -52,16 +56,20 @@ import com.example.ui.auth.taps.RegisterTap
 import com.example.ui.common.components.ErrorDialog
 import com.example.ui.common.components.LoadingAnimation
 import com.example.ui.common.components.LostConnectionErrorDialog
+import com.example.ui.destinations.AuthScreenDestination
+import com.example.ui.destinations.HomeScreenDestination
 import com.example.ui.theme.spacing
 import com.example.ui.utils.modifyTap
 import com.example.ui.utils.paddingWithPercentage
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlin.coroutines.EmptyCoroutineContext
 
 @OptIn(ExperimentalComposeUiApi::class)
-@RootNavGraph(start = true)
 @Destination
 @Composable
 fun AuthScreen(
@@ -74,6 +82,23 @@ fun AuthScreen(
     val eventError = viewModel.eventError
     var authErrorDialog by remember { mutableStateOf(false) }
     var lostConnectionErrorDialog by remember { mutableStateOf(false) }
+    LaunchedEffect(true) {
+        viewModel.navigator.onEach { authNavigator ->
+            viewModel.setNavigator { null }
+            authNavigator.let {
+                when (it) {
+                    AuthNavigator.NavigateToHomeScreen -> {
+                        navigator?.navigate(HomeScreenDestination, navOptions = navOptions {
+                            popUpTo(AuthScreenDestination.route) {
+                                inclusive = true
+                            }
+                        })
+                    }
+                }
+            }
+        }.flowOn(EmptyCoroutineContext).launchIn(this)
+    }
+
     LaunchedEffect(key1 = eventError) {
         eventError.collect { error ->
             when (error) {
@@ -146,7 +171,11 @@ fun AuthScreen(
     val nikeLogoPainter = rememberAsyncImagePainter(R.drawable.nike_logo)
     val authImagePainter = rememberAsyncImagePainter(R.drawable.auth_image)
 
-    Box {
+    Box(
+        Modifier
+            .statusBarsPadding()
+            .systemBarsPadding()
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -281,9 +310,11 @@ fun AuthScreen(
                 )
             }
             Box(modifier = Modifier.fillMaxSize()) {
-                LoadingAnimation(modifier = Modifier
-                    .size(150.dp)
-                    .align(Center))
+                LoadingAnimation(
+                    modifier = Modifier
+                        .size(150.dp)
+                        .align(Center)
+                )
             }
         }
     }

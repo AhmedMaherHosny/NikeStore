@@ -1,7 +1,7 @@
 package com.example.presenter.auth.states
 
-import com.example.core.BaseViewState
-import com.example.core.StateErrorType
+import com.example.core.base.BaseViewState
+import com.example.core.base.StateErrorType
 import com.example.core.validation.InputWrapper
 import com.example.core.validation.ValidationType
 import kotlinx.coroutines.flow.MutableSharedFlow

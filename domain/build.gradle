@@ -31,6 +31,10 @@ android {
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_17.toString()
     }
+    // Allow references to generated code
+    kapt {
+        correctErrorTypes = true
+    }
 }
 
 dependencies {
@@ -40,8 +44,12 @@ dependencies {
     implementation (Libs.hiltNavigation)
     implementation (Libs.hiltNavigationCompose)
     kapt(Libs.hiltAndroidCompiler)
-}
-// Allow references to generated code
-kapt {
-    correctErrorTypes = true
+
+    //firebase
+    implementation platform(Libs.firebaseBom)
+    implementation(Libs.firebaseAnalytics)
+    implementation(Libs.firebaseAuth)
+    implementation(Libs.firebaseAuthGoogle)
+    implementation(Libs.firebaseFirestore)
+    implementation(Libs.firebaseStorage)
 }

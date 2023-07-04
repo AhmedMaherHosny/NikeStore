@@ -31,6 +31,10 @@ android {
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_17.toString()
     }
+    // Allow references to generated code
+    kapt {
+        correctErrorTypes = true
+    }
 }
 
 dependencies {
@@ -55,8 +59,4 @@ dependencies {
 
     //Gson
     implementation(Libs.gson)
-}
-// Allow references to generated code
-kapt {
-    correctErrorTypes = true
 }

@@ -1,7 +1,7 @@
 package com.example.presenter.auth
 
-import com.example.core.BaseState
+import com.example.core.base.BaseState
 
 sealed class AuthNavigator : BaseState {
-    object NavigatToPhoneVerificationScreen : AuthNavigator()
+    object NavigateToHomeScreen : AuthNavigator()
 }

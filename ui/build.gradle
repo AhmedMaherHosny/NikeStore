@@ -6,18 +6,6 @@ plugins {
     id 'com.google.devtools.ksp' version '1.8.21-1.0.11'
 }
 
-kotlin {
-    sourceSets {
-        debug {
-            kotlin.srcDir("build/generated/ksp/debug/kotlin")
-        }
-        release {
-
-            kotlin.srcDir("build/generated/ksp/release/kotlin")
-        }
-    }
-}
-
 android {
     namespace 'com.example.ui'
     compileSdk 33
@@ -50,34 +38,41 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion Versions.kotlinCompilerExtensionVersion
     }
+    // Allow references to generated code
+    kapt {
+        correctErrorTypes = true
+    }
+//    ksp {
+//        arg("compose-destinations.codeGenPackageName", "com.example.ui")
+//    }
 }
 
 dependencies {
     implementation project(':core')
     implementation project(':presenter')
 
-    implementation (Libs.coreKtx)
+    implementation(Libs.coreKtx)
     implementation platform(Libs.kotlinBom)
-    implementation (Libs.lifecycle)
-    implementation (Libs.activityCompose)
+    implementation(Libs.lifecycle)
+    implementation(Libs.activityCompose)
     implementation platform(Libs.composeBom)
-    implementation (Libs.composeUi)
-    implementation (Libs.uiGraphics)
-    implementation (Libs.uiToolingPreview)
-    implementation (Libs.material13)
-    testImplementation (Libs.junit)
-    androidTestImplementation (Libs.extJunit)
-    androidTestImplementation (Libs.espresso)
+    implementation(Libs.composeUi)
+    implementation(Libs.uiGraphics)
+    implementation(Libs.uiToolingPreview)
+    implementation(Libs.material13)
+    testImplementation(Libs.junit)
+    androidTestImplementation(Libs.extJunit)
+    androidTestImplementation(Libs.espresso)
     androidTestImplementation platform(Libs.composeBom)
-    androidTestImplementation (Libs.uiTestJunit)
-    debugImplementation (Libs.composeUiTooling)
-    debugImplementation (Libs.uiTestManifest)
-    implementation (Libs.systemUiController)
+    androidTestImplementation(Libs.uiTestJunit)
+    debugImplementation(Libs.composeUiTooling)
+    debugImplementation(Libs.uiTestManifest)
+    implementation(Libs.systemUiController)
 
     //hilt
     implementation(Libs.hiltAndroid)
-    implementation (Libs.hiltNavigation)
-    implementation (Libs.hiltNavigationCompose)
+    implementation(Libs.hiltNavigation)
+    implementation(Libs.hiltNavigationCompose)
     kapt(Libs.hiltAndroidCompiler)
 
     //timber
@@ -86,6 +81,7 @@ dependencies {
     //navigation
     implementation(Libs.navigation)
     ksp(Libs.navigationKsp)
+
 
     //coil
     implementation(Libs.coil)
@@ -98,8 +94,4 @@ dependencies {
 
     //lottie
     implementation(Libs.lottieCompose)
-}
-// Allow references to generated code
-kapt {
-    correctErrorTypes = true
 }

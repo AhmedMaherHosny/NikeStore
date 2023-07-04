@@ -1,10 +1,10 @@
 package com.example.presenter.auth.states
 
-import com.example.core.BaseViewState
+import com.example.core.base.BaseViewState
 import com.example.core.validation.InputWrapper
 import com.example.core.validation.ValidationType
 import kotlinx.coroutines.flow.MutableSharedFlow
-import com.example.core.StateErrorType
+import com.example.core.base.StateErrorType
 
 data class LoginViewState(
     override val isRefreshing: Boolean = false,
