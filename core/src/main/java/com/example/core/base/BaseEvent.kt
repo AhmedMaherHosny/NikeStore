@@ -1,4 +1,4 @@
-package com.example.core
+package com.example.core.base
 
 import kotlinx.coroutines.flow.MutableSharedFlow
 
@@ -15,5 +15,5 @@ interface BaseViewState {
 }
 
 enum class StateErrorType {
-    INITIAL, AUTHENTICATION_FAILED, NETWORK_ERROR, SERVER_IS_OFFLINE, UNKOWN
+     AUTHENTICATION_FAILED, NETWORK_ERROR, SERVER_IS_OFFLINE, UNKOWN
 }

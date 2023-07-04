@@ -1,4 +1,4 @@
-package com.example.core
+package com.example.core.enums
 
 enum class PeopleCategory {
     MEN {

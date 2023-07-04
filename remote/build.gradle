@@ -31,6 +31,10 @@ android {
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_17.toString()
     }
+    // Allow references to generated code
+    kapt {
+        correctErrorTypes = true
+    }
 }
 
 dependencies {
@@ -57,8 +61,4 @@ dependencies {
     implementation(Libs.firebaseAuthGoogle)
     implementation(Libs.firebaseFirestore)
     implementation(Libs.firebaseStorage)
-}
-// Allow references to generated code
-kapt {
-    correctErrorTypes = true
 }

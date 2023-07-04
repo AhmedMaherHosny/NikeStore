@@ -1,7 +1,7 @@
 package com.example.domain.models
 
-import com.example.core.PeopleCategory
-import com.example.core.ProductCategory
+import com.example.core.enums.PeopleCategory
+import com.example.core.enums.ProductCategory
 
 data class ProductItemDomainModel(
     val id: String? = null,
