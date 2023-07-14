@@ -94,4 +94,9 @@ dependencies {
 
     //lottie
     implementation(Libs.lottieCompose)
+
+    //firebase
+    implementation platform(Libs.firebaseBom)
+    implementation(Libs.firebaseAuth)
+    implementation(Libs.firebaseAuthGoogle)
 }

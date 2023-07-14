@@ -9,4 +9,5 @@ interface FirebaseRepository {
     suspend fun setOfflineUser(id: String)
     suspend fun loginUserByEmailAndPassword(email: String, password: String) : String
     suspend fun getUserDataFromServer(id: String) : AppUserDomainModel
+
 }
