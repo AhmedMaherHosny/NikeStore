@@ -57,4 +57,7 @@ dependencies {
     implementation(Libs.firebaseFirestore)
     implementation(Libs.firebaseStorage)
 
+    //facebook SDK
+    implementation(Libs.facebookSDK)
+
 }

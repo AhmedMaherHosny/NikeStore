@@ -1,6 +1,7 @@
 package com.example.ui.auth
 
 import android.app.Activity.RESULT_OK
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -96,15 +97,12 @@ fun AuthScreen(
     val lifecycleOwner = LocalLifecycleOwner.current
     val lifecycleScope = lifecycleOwner.lifecycleScope
     val googleAuthUiClient by lazy {
-        GoogleAuthUiClient(
-            context = context,
-            oneTapClient = Identity.getSignInClient(context)
-        )
+        GoogleAuthUiClient(oneTapClient = Identity.getSignInClient(context))
     }
     val launcherForGoogleAuth = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartIntentSenderForResult(),
         onResult = { result ->
-            if(result.resultCode == RESULT_OK) {
+            if (result.resultCode == RESULT_OK) {
                 lifecycleScope.launch {
                     val signInResult = googleAuthUiClient.signInWithIntent(
                         intent = result.data ?: return@launch
@@ -200,7 +198,13 @@ fun AuthScreen(
     val onFacebookClicked = remember {
         {
             keyboardController?.hide()
-
+            lifecycleScope.launch {
+                Toast.makeText(
+                    context,
+                    "Can't use Facebook login if the app not registered in google play!",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
         }
     }
     var currentTab by remember { mutableStateOf(AuthTaps.Login) }

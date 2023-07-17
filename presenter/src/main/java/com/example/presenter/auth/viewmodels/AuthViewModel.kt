@@ -94,16 +94,13 @@ class AuthViewModel @Inject constructor(
                 var appUserDomainModel = googleSignInResult.user.toAppUserDomainModel()
                 appUserDomainModel = addUserToFireStoreUseCase(appUserDomainModel)
                 writeUserDataToDatastoreUseCase(USER_MODEL, appUserDomainModel)
+                appUserUiModel = appUserDomainModel.toAppUserUiModel()
                 loginViewState = loginViewState.copy(isLoading = false)
                 setNavigator { AuthNavigator.NavigateToHomeScreen }
                 return@launch
             }
             Timber.e(googleSignInResult.error)
         }
-    }
-
-    fun facebook() {
-
     }
 
     private fun login() {
@@ -134,6 +131,7 @@ class AuthViewModel @Inject constructor(
             )
             val appUserDomainModel = addUserToFireStoreUseCase(authUser)
             writeUserDataToDatastoreUseCase(USER_MODEL, appUserDomainModel)
+            appUserUiModel = appUserDomainModel.toAppUserUiModel()
             registerViewState = registerViewState.copy(isLoading = false)
             setNavigator { AuthNavigator.NavigateToHomeScreen }
         }

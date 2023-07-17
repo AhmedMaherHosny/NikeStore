@@ -1,6 +1,5 @@
 package com.example.presenter.auth.google_auth
 
-import android.content.Context
 import android.content.Intent
 import android.content.IntentSender
 import com.example.core.Constants.DEFAULT_AVATAR_URL
@@ -15,7 +14,6 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.tasks.await
 
 class GoogleAuthUiClient(
-    private val context: Context,
     private val oneTapClient: SignInClient,
 ) {
 
@@ -69,16 +67,6 @@ class GoogleAuthUiClient(
             e.printStackTrace()
             if (e is CancellationException) throw e
         }
-    }
-
-    fun getSignedInUser(): AppUserUiModel? = firebaseAuth.currentUser?.run {
-        AppUserUiModel(
-            id = uid,
-            name = displayName,
-            avatar = photoUrl?.toString() ?: DEFAULT_AVATAR_URL,
-            phone = phoneNumber,
-            email = email
-        )
     }
 
     private fun buildSignInRequest(): BeginSignInRequest {

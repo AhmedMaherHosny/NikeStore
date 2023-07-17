@@ -1,19 +1,15 @@
 package com.example.remote.repository
 
 import com.example.core.Constants.COLLECTION_OF_USERS
-import com.example.core.Constants.WEB_CLIENT_ID_GOOGLE
 import com.example.domain.models.AppUserDomainModel
 import com.example.domain.repository.remote.FirebaseRepository
 import com.example.remote.mappers.toAppUserDomain
 import com.example.remote.mappers.toAppUserDomainModel
 import com.example.remote.mappers.toAppUserRemoteModel
 import com.example.remote.models.AppUserRemoteModel
-import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import kotlinx.coroutines.suspendCancellableCoroutine
 import java.text.SimpleDateFormat
 import java.util.Locale
 import javax.inject.Inject
@@ -49,14 +45,25 @@ class FirebaseRepositoryImpl @Inject constructor(
         suspendCoroutine { continuation ->
             val usersCollection = firebaseFireStore.collection(COLLECTION_OF_USERS)
             val userDocument = usersCollection.document(appUserDomainModel.id!!)
-            userDocument.set(appUserDomainModel.toAppUserRemoteModel())
-                .addOnSuccessListener {
-                    continuation.resume(appUserDomainModel)
+            userDocument.get()
+                .addOnSuccessListener { documentSnapshot ->
+                    if (!documentSnapshot.exists()) {
+                        userDocument.set(appUserDomainModel.toAppUserRemoteModel())
+                            .addOnSuccessListener {
+                                continuation.resume(appUserDomainModel)
+                            }
+                            .addOnFailureListener { task ->
+                                continuation.resumeWithException(task)
+                            }
+                    } else {
+                        val appUserRemoteModel =
+                            documentSnapshot.toObject(AppUserRemoteModel::class.java)
+                        continuation.resume(appUserRemoteModel!!.toAppUserDomainModel())
+                    }
                 }
                 .addOnFailureListener { task ->
                     continuation.resumeWithException(task)
                 }
-
         }
 
     override suspend fun setOnlineUser(id: String) {
