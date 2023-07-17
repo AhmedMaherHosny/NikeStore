@@ -45,14 +45,25 @@ class FirebaseRepositoryImpl @Inject constructor(
         suspendCoroutine { continuation ->
             val usersCollection = firebaseFireStore.collection(COLLECTION_OF_USERS)
             val userDocument = usersCollection.document(appUserDomainModel.id!!)
-            userDocument.set(appUserDomainModel.toAppUserRemoteModel())
-                .addOnSuccessListener {
-                    continuation.resume(appUserDomainModel)
+            userDocument.get()
+                .addOnSuccessListener { documentSnapshot ->
+                    if (!documentSnapshot.exists()) {
+                        userDocument.set(appUserDomainModel.toAppUserRemoteModel())
+                            .addOnSuccessListener {
+                                continuation.resume(appUserDomainModel)
+                            }
+                            .addOnFailureListener { task ->
+                                continuation.resumeWithException(task)
+                            }
+                    } else {
+                        val appUserRemoteModel =
+                            documentSnapshot.toObject(AppUserRemoteModel::class.java)
+                        continuation.resume(appUserRemoteModel!!.toAppUserDomainModel())
+                    }
                 }
                 .addOnFailureListener { task ->
                     continuation.resumeWithException(task)
                 }
-
         }
 
     override suspend fun setOnlineUser(id: String) {
@@ -118,5 +129,4 @@ class FirebaseRepositoryImpl @Inject constructor(
                     continuation.resumeWithException(task)
                 }
         }
-
 }

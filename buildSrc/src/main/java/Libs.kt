@@ -43,4 +43,5 @@ object Libs {
     const val firebaseStorage = "com.google.firebase:firebase-storage-ktx"
     const val lottieCompose = "com.airbnb.android:lottie-compose:${Versions.lottieCompose}"
     const val datastore = "androidx.datastore:datastore-preferences:${Versions.datastore}"
+    const val facebookSDK = "com.facebook.android:facebook-login:latest.release"
 }

@@ -1,5 +1,10 @@
 package com.example.ui.auth
 
+import android.app.Activity.RESULT_OK
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.IntentSenderRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -37,15 +42,19 @@ import androidx.compose.ui.Alignment.Companion.TopStart
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.navOptions
 import coil.compose.rememberAsyncImagePainter
 import com.example.core.base.StateErrorType
 import com.example.presenter.auth.AuthEvent
 import com.example.presenter.auth.AuthNavigator
+import com.example.presenter.auth.google_auth.GoogleAuthUiClient
 import com.example.presenter.auth.viewmodels.AuthViewModel
 import com.example.ui.R
 import com.example.ui.auth.components.OrSeparate
@@ -62,11 +71,13 @@ import com.example.ui.theme.spacing
 import com.example.ui.utils.modifyTap
 import com.example.ui.utils.paddingWithPercentage
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import com.google.android.gms.auth.api.identity.Identity
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import kotlin.coroutines.EmptyCoroutineContext
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -82,6 +93,26 @@ fun AuthScreen(
     val eventError = viewModel.eventError
     var authErrorDialog by remember { mutableStateOf(false) }
     var lostConnectionErrorDialog by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val lifecycleScope = lifecycleOwner.lifecycleScope
+    val googleAuthUiClient by lazy {
+        GoogleAuthUiClient(oneTapClient = Identity.getSignInClient(context))
+    }
+    val launcherForGoogleAuth = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartIntentSenderForResult(),
+        onResult = { result ->
+            if (result.resultCode == RESULT_OK) {
+                lifecycleScope.launch {
+                    val signInResult = googleAuthUiClient.signInWithIntent(
+                        intent = result.data ?: return@launch
+                    )
+                    viewModel.google(signInResult)
+                }
+            }
+        }
+    )
+
     LaunchedEffect(true) {
         viewModel.navigator.onEach { authNavigator ->
             viewModel.setNavigator { null }
@@ -154,17 +185,26 @@ fun AuthScreen(
     val onGoogleClicked = remember {
         {
             keyboardController?.hide()
-            viewModel.setEventClicks(
-                AuthEvent.OnGoogleClicked
-            )
+            lifecycleScope.launch {
+                val signInIntentSender = googleAuthUiClient.signIn()
+                launcherForGoogleAuth.launch(
+                    IntentSenderRequest.Builder(
+                        signInIntentSender ?: return@launch
+                    ).build()
+                )
+            }
         }
     }
     val onFacebookClicked = remember {
         {
             keyboardController?.hide()
-            viewModel.setEventClicks(
-                AuthEvent.OnFacebookClicked
-            )
+            lifecycleScope.launch {
+                Toast.makeText(
+                    context,
+                    "Can't use Facebook login if the app not registered in google play!",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
         }
     }
     var currentTab by remember { mutableStateOf(AuthTaps.Login) }

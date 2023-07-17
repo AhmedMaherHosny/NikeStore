@@ -14,8 +14,10 @@ import com.example.domain.usecases.login_user_by_email_and_password.LoginUserByE
 import com.example.domain.usecases.write_user_datastore.WriteUserDataToDatastoreUseCase
 import com.example.presenter.auth.AuthEvent
 import com.example.presenter.auth.AuthNavigator
+import com.example.presenter.auth.google_auth.GoogleSignInResult
 import com.example.presenter.auth.states.LoginViewState
 import com.example.presenter.auth.states.RegisterViewState
+import com.example.presenter.mappers.toAppUserDomainModel
 import com.example.presenter.mappers.toAppUserUiModel
 import com.example.presenter.utils.appUserUiModel
 import com.google.firebase.FirebaseNetworkException
@@ -82,23 +84,23 @@ class AuthViewModel @Inject constructor(
             AuthEvent.OnRegisterClicked -> {
                 register()
             }
-
-            AuthEvent.OnGoogleClicked -> {
-                google()
-            }
-
-            AuthEvent.OnFacebookClicked -> {
-                facebook()
-            }
         }
     }
 
-    private fun google() {
-
-    }
-
-    private fun facebook() {
-
+    fun google(googleSignInResult: GoogleSignInResult) {
+        viewModelScope.launch(firebaseAuthExceptionHandlers) {
+            loginViewState = loginViewState.copy(isLoading = true)
+            if (googleSignInResult.user != null) {
+                var appUserDomainModel = googleSignInResult.user.toAppUserDomainModel()
+                appUserDomainModel = addUserToFireStoreUseCase(appUserDomainModel)
+                writeUserDataToDatastoreUseCase(USER_MODEL, appUserDomainModel)
+                appUserUiModel = appUserDomainModel.toAppUserUiModel()
+                loginViewState = loginViewState.copy(isLoading = false)
+                setNavigator { AuthNavigator.NavigateToHomeScreen }
+                return@launch
+            }
+            Timber.e(googleSignInResult.error)
+        }
     }
 
     private fun login() {
@@ -129,6 +131,7 @@ class AuthViewModel @Inject constructor(
             )
             val appUserDomainModel = addUserToFireStoreUseCase(authUser)
             writeUserDataToDatastoreUseCase(USER_MODEL, appUserDomainModel)
+            appUserUiModel = appUserDomainModel.toAppUserUiModel()
             registerViewState = registerViewState.copy(isLoading = false)
             setNavigator { AuthNavigator.NavigateToHomeScreen }
         }

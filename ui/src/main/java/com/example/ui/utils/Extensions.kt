@@ -1,5 +1,8 @@
 package com.example.ui.utils
 
+import android.content.Context
+import android.content.ContextWrapper
+import androidx.activity.ComponentActivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -29,4 +32,19 @@ fun Modifier.modifyTap(
             Modifier
         }
     )
+}
+
+
+inline fun <reified Activity : ComponentActivity> Context.getActivity(): Activity? {
+    return when (this) {
+        is Activity -> this
+        else -> {
+            var context = this
+            while (context is ContextWrapper) {
+                context = context.baseContext
+                if (context is Activity) return context
+            }
+            null
+        }
+    }
 }
