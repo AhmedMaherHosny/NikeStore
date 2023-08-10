@@ -1,9 +1,9 @@
-package com.example.domain.models
+package com.example.presenter.models
 
-import com.example.core.enums.Sex
 import com.example.core.enums.ProductCategory
+import com.example.core.enums.Sex
 
-data class ProductItemDomainModel(
+data class ProductItemUiModel(
     val id: String? = null,
     val name: String? = null,
     val description: String? = null,
@@ -13,5 +13,5 @@ data class ProductItemDomainModel(
     val sex: Sex,
     val productCategory: ProductCategory,
     val subCategory: Any,
-    val colorSizeInformation: List<ProductColorSizeInformationDomainModel> = listOf(),
+    val colorSizeInformation: List<ProductColorSizeInformationUiModel> = listOf(),
 )

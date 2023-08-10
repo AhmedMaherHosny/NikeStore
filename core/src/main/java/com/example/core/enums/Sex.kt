@@ -1,6 +1,6 @@
 package com.example.core.enums
 
-enum class PeopleCategory {
+enum class Sex {
     MEN {
         override fun toString() = "Men"
     },

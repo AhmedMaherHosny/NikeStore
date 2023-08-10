@@ -10,9 +10,6 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val deleteUserDataFromDatastoreUseCase: DeleteUserDataFromDatastoreUseCase
 ) : ViewModel() {
-    fun x() {
-        viewModelScope.launch { deleteUserDataFromDatastoreUseCase(USER_MODEL) }
-    }
+
 }
