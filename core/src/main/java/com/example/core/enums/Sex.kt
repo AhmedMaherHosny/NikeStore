@@ -9,5 +9,16 @@ enum class Sex {
     },
     KIDS {
         override fun toString() = "Kids"
+    };
+
+    companion object {
+        fun fromSerializedForm(value: String): Sex {
+            return when (value) {
+                "MEN" -> MEN
+                "WOMEN" -> WOMEN
+                "KIDS" -> KIDS
+                else -> throw IllegalArgumentException("Unknown sex: $value")
+            }
+        }
     }
 }

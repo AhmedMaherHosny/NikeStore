@@ -1,4 +1,7 @@
 package com.example.presenter.home
 
-class HomeNavigator {
+import com.example.core.base.BaseState
+
+sealed class HomeNavigator : BaseState {
+    data class NavigateToProductScreen(val id : String) : HomeNavigator()
 }

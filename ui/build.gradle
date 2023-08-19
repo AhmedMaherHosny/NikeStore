@@ -99,4 +99,5 @@ dependencies {
     implementation platform(Libs.firebaseBom)
     implementation(Libs.firebaseAuth)
     implementation(Libs.firebaseAuthGoogle)
+    implementation(Libs.firebaseFirestore)
 }

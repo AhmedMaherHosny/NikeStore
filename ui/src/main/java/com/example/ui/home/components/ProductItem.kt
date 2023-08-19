@@ -74,7 +74,7 @@ fun ProductItem(
         AsyncImage(
             model = productItem.colorSizeInformation.first().photoUrl,
             contentDescription = "product image",
-            contentScale = ContentScale.Crop,
+            contentScale = ContentScale.Fit,
             modifier = Modifier
                 .rotate(20f)
                 .size(height = 120.dp, width = 210.dp)
