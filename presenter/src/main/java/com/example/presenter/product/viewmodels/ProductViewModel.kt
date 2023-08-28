@@ -7,11 +7,18 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.core.base.StateErrorType
+import com.example.domain.models.OrderItemDomainModel
+import com.example.domain.usecases.add_product_to_shopping_bag.AddProductToShoppingBagUseCase
 import com.example.domain.usecases.get_product_by_id.GetProductByIdUseCase
+import com.example.domain.usecases.remove_product_from_shopping_bag.RemoveProductFromShoppingBagUseCase
+import com.example.domain.usecases.save_product.SaveProductUseCase
+import com.example.domain.usecases.unsave_product.UnSaveProductUseCase
+import com.example.presenter.mappers.toOrderItemDomainModel
 import com.example.presenter.mappers.toProductItemUiModel
 import com.example.presenter.product.ProductEvent
 import com.example.presenter.product.ProductNavigator
 import com.example.presenter.product.states.ProductViewState
+import com.example.presenter.utils.appUserUiModel
 import com.google.firebase.FirebaseNetworkException
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
@@ -32,7 +39,11 @@ import javax.inject.Inject
 @HiltViewModel
 class ProductViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val getProductByIdUseCase: GetProductByIdUseCase
+    private val getProductByIdUseCase: GetProductByIdUseCase,
+    private val saveProductUseCase: SaveProductUseCase,
+    private val unSaveProductUseCase: UnSaveProductUseCase,
+    private val addProductToShoppingBagUseCase: AddProductToShoppingBagUseCase,
+    private val removeProductToShoppingBagUseCase: RemoveProductFromShoppingBagUseCase,
 ) : ViewModel() {
     var productViewState by mutableStateOf(ProductViewState())
     private val _eventError = MutableSharedFlow<StateErrorType>()
@@ -70,8 +81,8 @@ class ProductViewModel @Inject constructor(
     }
 
     init {
-        subscribeEvents()
         savedStateHandle.get<String>("id")?.let {
+            subscribeEvents(it)
             loadProduct(it)
         }
     }
@@ -79,17 +90,56 @@ class ProductViewModel @Inject constructor(
     private fun loadProduct(id: String) {
         viewModelScope.launch(firebaseAuthExceptionHandlers) {
             productViewState = productViewState.copy(isLoading = true)
-            val product = getProductByIdUseCase(id).toProductItemUiModel()
+            val product = getProductByIdUseCase(appUserUiModel?.id!!, id).toProductItemUiModel()
             productViewState =
                 productViewState.copy(isLoading = false, productItemUiModel = product)
         }
     }
 
-    private fun subscribeEvents() {
+    private fun subscribeEvents(id: String) {
         viewModelScope.launch {
             eventClicks.collect {
-
+                when (it) {
+                    is ProductEvent.OnSavedIconClicked -> {
+                        if (!it.isSaved)
+                            saveItem(id)
+                        else
+                            removeItem(id)
+                    }
+                    is ProductEvent.OnShoppingButtonClicked -> {
+                        if (!it.isInShoppingBag)
+                            addItemToShoppingList(it.orderItemUiModel.toOrderItemDomainModel())
+                        else
+                            removeItemToShoppingList(it.orderItemUiModel.toOrderItemDomainModel())
+                    }
+                }
             }
+        }
+    }
+
+    private fun addItemToShoppingList(orderItemDomainModel: OrderItemDomainModel) {
+        viewModelScope.launch(firebaseAuthExceptionHandlers) {
+            println("before")
+            addProductToShoppingBagUseCase(appUserUiModel?.id!!, orderItemDomainModel)
+            println("after")
+        }
+    }
+
+    private fun removeItemToShoppingList(orderItemDomainModel: OrderItemDomainModel) {
+        viewModelScope.launch(firebaseAuthExceptionHandlers) {
+            removeProductToShoppingBagUseCase(appUserUiModel?.id!!, orderItemDomainModel)
+        }
+    }
+
+    private fun saveItem(id: String) {
+        viewModelScope.launch(firebaseAuthExceptionHandlers) {
+            saveProductUseCase(appUserUiModel?.id!!, id)
+        }
+    }
+
+    private fun removeItem(id: String) {
+        viewModelScope.launch(firebaseAuthExceptionHandlers) {
+            unSaveProductUseCase(appUserUiModel?.id!!, id)
         }
     }
 

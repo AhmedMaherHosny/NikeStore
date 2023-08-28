@@ -8,6 +8,8 @@ data class ProductItemDomainModel(
     val name: String? = null,
     val description: String? = null,
     val price: Float? = null,
+    val isSaved : Boolean = false,
+    val isInShoppingBag : Boolean = false,
     val peopleRatedCounter: Long = 0,
     val rate: Long = 0,
     val sex: Sex,

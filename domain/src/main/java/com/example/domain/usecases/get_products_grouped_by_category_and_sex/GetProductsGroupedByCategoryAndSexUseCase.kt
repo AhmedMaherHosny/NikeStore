@@ -9,8 +9,8 @@ import javax.inject.Inject
 class GetProductsGroupedByCategoryAndSexUseCase @Inject constructor(
     private val repository: FirebaseRepository
 ) {
-    suspend operator fun invoke(sex: Sex): Map<Pair<ProductCategory, Any>, List<ProductItemDomainModel>> =
-        repository.getProducts().groupBy { Pair(it.productCategory, it.subCategory) }
+    suspend operator fun invoke(userId : String,sex: Sex): Map<Pair<ProductCategory, Any>, List<ProductItemDomainModel>> =
+        repository.getProducts(userId).groupBy { Pair(it.productCategory, it.subCategory) }
             .mapValues { (_, products) ->
                 products.filter { it.sex == sex }
             }

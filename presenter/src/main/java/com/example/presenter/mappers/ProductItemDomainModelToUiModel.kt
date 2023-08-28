@@ -9,6 +9,8 @@ fun ProductItemDomainModel.toProductItemUiModel(): ProductItemUiModel {
         name = name,
         description = description,
         price = price,
+        isSaved = isSaved,
+        isInShoppingBag = isInShoppingBag,
         peopleRatedCounter = peopleRatedCounter,
         rate = rate,
         sex = sex,

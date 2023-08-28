@@ -7,6 +7,6 @@ import javax.inject.Inject
 class GetProductByIdUseCase @Inject constructor(
     private val repository: FirebaseRepository
 ) {
-    suspend operator fun invoke(id: String): ProductItemDomainModel =
-        repository.getProduct(id)
+    suspend operator fun invoke(userId: String, productId: String): ProductItemDomainModel =
+        repository.getProduct(userId, productId)
 }

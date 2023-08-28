@@ -7,11 +7,18 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.core.base.StateErrorType
 import com.example.core.enums.Sex
+import com.example.domain.models.OrderItemDomainModel
+import com.example.domain.usecases.add_product_to_shopping_bag.AddProductToShoppingBagUseCase
 import com.example.domain.usecases.get_products_grouped_by_category_and_sex.GetProductsGroupedByCategoryAndSexUseCase
+import com.example.domain.usecases.remove_product_from_shopping_bag.RemoveProductFromShoppingBagUseCase
+import com.example.domain.usecases.save_product.SaveProductUseCase
+import com.example.domain.usecases.unsave_product.UnSaveProductUseCase
 import com.example.presenter.home.HomeEvent
 import com.example.presenter.home.HomeNavigator
 import com.example.presenter.home.states.HomeViewState
+import com.example.presenter.mappers.toOrderItemDomainModel
 import com.example.presenter.mappers.toProductItemUiModel
+import com.example.presenter.utils.appUserUiModel
 import com.google.firebase.FirebaseNetworkException
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
@@ -31,7 +38,11 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val getProductsGroupedByCategoryAndSexUseCase: GetProductsGroupedByCategoryAndSexUseCase
+    private val getProductsGroupedByCategoryAndSexUseCase: GetProductsGroupedByCategoryAndSexUseCase,
+    private val saveProductUseCase: SaveProductUseCase,
+    private val unSaveProductUseCase: UnSaveProductUseCase,
+    private val addProductToShoppingBagUseCase: AddProductToShoppingBagUseCase,
+    private val removeProductToShoppingBagUseCase: RemoveProductFromShoppingBagUseCase,
 ) : ViewModel() {
     var homeViewState by mutableStateOf(HomeViewState())
     private val _eventError = MutableSharedFlow<StateErrorType>()
@@ -86,18 +97,58 @@ class HomeViewModel @Inject constructor(
             is HomeEvent.OnSexFilterClicked -> {
                 handleOnSexFilterClicked(event.sex)
             }
+
+            is HomeEvent.OnSavedIconClicked -> {
+                if (!event.isSaved)
+                    saveItem(event.productId)
+                else
+                    removeItem(event.productId)
+            }
+
+            is HomeEvent.OnShoppingIconClicked -> {
+                if (!event.isInShoppingBag)
+                    addItemToShoppingList(event.orderItemUiModel.toOrderItemDomainModel())
+                else
+                    removeItemToShoppingList(event.orderItemUiModel.toOrderItemDomainModel())
+            }
         }
     }
+
+    private fun addItemToShoppingList(orderItemDomainModel: OrderItemDomainModel) {
+        viewModelScope.launch(firebaseAuthExceptionHandlers) {
+            addProductToShoppingBagUseCase(appUserUiModel?.id!!, orderItemDomainModel)
+        }
+    }
+
+    private fun removeItemToShoppingList(orderItemDomainModel: OrderItemDomainModel) {
+        viewModelScope.launch(firebaseAuthExceptionHandlers) {
+            removeProductToShoppingBagUseCase(appUserUiModel?.id!!, orderItemDomainModel)
+        }
+    }
+
 
     private fun handleOnSexFilterClicked(sex: Sex = Sex.MEN) {
         viewModelScope.launch(firebaseAuthExceptionHandlers) {
             homeViewState = homeViewState.copy(isLoading = true)
-            val productsDomainModel = getProductsGroupedByCategoryAndSexUseCase(sex)
+            val productsDomainModel =
+                getProductsGroupedByCategoryAndSexUseCase(appUserUiModel?.id!!, sex)
             val productsUiModel = productsDomainModel.mapValues { (_, productsDomainModel) ->
                 productsDomainModel.map { productsDomainModel -> productsDomainModel.toProductItemUiModel() }
             }
             homeViewState =
                 homeViewState.copy(productsGroupedByCategory = productsUiModel, isLoading = false)
+        }
+    }
+
+    private fun saveItem(id: String) {
+        viewModelScope.launch(firebaseAuthExceptionHandlers) {
+            saveProductUseCase(appUserUiModel?.id!!, id)
+        }
+    }
+
+    private fun removeItem(id: String) {
+        viewModelScope.launch(firebaseAuthExceptionHandlers) {
+            unSaveProductUseCase(appUserUiModel?.id!!, id)
         }
     }
 

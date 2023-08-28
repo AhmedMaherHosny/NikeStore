@@ -52,6 +52,8 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.example.core.base.StateErrorType
+import com.example.presenter.models.OrderItemUiModel
+import com.example.presenter.product.ProductEvent
 import com.example.presenter.product.viewmodels.ProductViewModel
 import com.example.ui.R
 import com.example.ui.common.components.BackButton
@@ -91,6 +93,8 @@ fun ProductScreen(
     var productUrl by remember { mutableStateOf("") }
     var circleColor by remember { mutableStateOf(Color.Transparent) }
     var updateSelectedButton by remember { mutableStateOf(false) }
+    var isInShoppingBag by remember { mutableStateOf(false) }
+
 
     LaunchedEffect(key1 = eventError) {
         eventError.collect { error ->
@@ -125,12 +129,14 @@ fun ProductScreen(
     LaunchedEffect(key1 = productViewSate) {
         val product = productViewSate.productItemUiModel
         product?.let {
+            isSavedIconClicked = product.isSaved
             productUrl = it.colorSizeInformation.first().photoUrl!!
             circleColor = it.colorSizeInformation.first().colorCode?.parseColor() ?: Color.Black
             selectedButtonIndex =
                 it.colorSizeInformation.first().sizeUiModel.indexOfFirst { sizeInfo ->
                     sizeInfo.availablePieces > 0
                 }
+            isInShoppingBag = it.isInShoppingBag
         }
     }
 
@@ -193,12 +199,18 @@ fun ProductScreen(
                                         "Item removed from watch later list successfully",
                                         Toast.LENGTH_SHORT
                                     ).show()
+                                    viewModel.setEventClicks(
+                                        ProductEvent.OnSavedIconClicked(true)
+                                    )
                                 } else {
                                     Toast.makeText(
                                         context,
                                         "Item added to watch later list successfully",
                                         Toast.LENGTH_SHORT
                                     ).show()
+                                    viewModel.setEventClicks(
+                                        ProductEvent.OnSavedIconClicked(false)
+                                    )
                                 }
                                 isSavedIconClicked = !isSavedIconClicked
                             }
@@ -279,7 +291,38 @@ fun ProductScreen(
                             Button(
                                 modifier = Modifier,
                                 onClick = {
-
+                                    val orderItem = OrderItemUiModel(
+                                        productId = productViewSate.productItemUiModel!!.id,
+                                        name = productViewSate.productItemUiModel!!.name,
+                                        price = productViewSate.productItemUiModel!!.price,
+                                        photoUrl = productUrl,
+                                        colorCode = productViewSate.productItemUiModel!!.colorSizeInformation[selectedColorIndex].colorCode,
+                                        quantity = 1,
+                                        colorName = productViewSate.productItemUiModel!!.colorSizeInformation[selectedColorIndex].colorName,
+                                        size = productViewSate.productItemUiModel!!.colorSizeInformation[selectedColorIndex].sizeUiModel[selectedButtonIndex].size!!.toInt(),
+                                        sex = productViewSate.productItemUiModel!!.sex
+                                    )
+                                    if (!productViewSate.productItemUiModel!!.isInShoppingBag) {
+                                        viewModel.setEventClicks(
+                                            ProductEvent.OnShoppingButtonClicked(
+                                                false,
+                                                orderItem
+                                            )
+                                        )
+                                        isInShoppingBag = !isInShoppingBag
+                                        productViewSate.productItemUiModel!!.isInShoppingBag =
+                                            !productViewSate.productItemUiModel!!.isInShoppingBag
+                                    } else {
+                                        viewModel.setEventClicks(
+                                            ProductEvent.OnShoppingButtonClicked(
+                                                true,
+                                                orderItem
+                                            )
+                                        )
+                                        isInShoppingBag = !isInShoppingBag
+                                        productViewSate.productItemUiModel!!.isInShoppingBag =
+                                            !productViewSate.productItemUiModel!!.isInShoppingBag
+                                    }
                                 },
                                 border = BorderStroke(
                                     width = 1.dp,
@@ -295,7 +338,7 @@ fun ProductScreen(
                                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                                 ) {
                                     Text(
-                                        text = "ADD TO BAG",
+                                        text = if (!isInShoppingBag) "ADD TO BAG" else "REMOVE FROM BAG",
                                         fontWeight = FontWeight.Bold,
                                         fontSize = 11.sp,
                                         color = MaterialTheme.colorScheme.secondary

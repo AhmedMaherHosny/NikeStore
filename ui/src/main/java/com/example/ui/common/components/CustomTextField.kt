@@ -47,7 +47,7 @@ import com.example.ui.R
 
 @Composable
 fun CustomTextField(
-    leadingIcon: Int,
+    leadingIcon: Int? = null,
     placeholder: String,
     keyboardType: KeyboardType,
     imeAction: ImeAction,
@@ -86,11 +86,13 @@ fun CustomTextField(
                 onValueChange = { inputWrapper.onValueChange(it) },
                 shape = shape,
                 leadingIcon = {
-                    Icon(
-                        painter = painterResource(id = leadingIcon),
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.secondary.copy(alpha = 0.4f)
-                    )
+                    if (inputWrapper.validationType != ValidationType.NONE) {
+                        Icon(
+                            painter = painterResource(id = leadingIcon!!),
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.secondary.copy(alpha = 0.4f)
+                        )
+                    }
                 },
                 placeholder = {
                     Text(

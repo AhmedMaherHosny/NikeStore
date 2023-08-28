@@ -50,6 +50,7 @@ dependencies {
 
     //room
     implementation(Libs.roomRuntime)
+    implementation(Libs.roomKtx)
     annotationProcessor(Libs.roomCompilerAnnotationProcessor)
     ksp(Libs.roomCompilerKsp)
     implementation(Libs.roomPaging3)

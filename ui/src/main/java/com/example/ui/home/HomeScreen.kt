@@ -59,11 +59,15 @@ import com.example.core.enums.Sex
 import com.example.presenter.home.HomeEvent
 import com.example.presenter.home.HomeNavigator
 import com.example.presenter.home.viewmodels.HomeViewModel
+import com.example.presenter.models.OrderItemUiModel
 import com.example.ui.R
 import com.example.ui.common.components.ErrorDialog
 import com.example.ui.common.components.LoadingAnimation
 import com.example.ui.common.components.LostConnectionErrorDialog
+import com.example.ui.destinations.OrderPlacedScreenDestination
 import com.example.ui.destinations.ProductScreenDestination
+import com.example.ui.destinations.SavedItemsScreenDestination
+import com.example.ui.destinations.ShoppingBagScreenDestination
 import com.example.ui.home.components.ProductItem
 import com.example.ui.theme.spacing
 import com.example.ui.utils.noRippleClickable
@@ -71,6 +75,8 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import com.ramcosta.composedestinations.result.NavResult
+import com.ramcosta.composedestinations.result.ResultRecipient
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -82,7 +88,9 @@ import kotlin.coroutines.EmptyCoroutineContext
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
-    navigator: DestinationsNavigator? = null
+    navigator: DestinationsNavigator? = null,
+    resultRecipient: ResultRecipient<OrderPlacedScreenDestination, Boolean>
+
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
     var homeErrorDialog by remember { mutableStateOf(false) }
@@ -95,6 +103,18 @@ fun HomeScreen(
         viewModel.setEventClicks(
             HomeEvent.OnSexFilterClicked(sex)
         )
+    }
+
+    resultRecipient.onNavResult { result ->
+        when (result) {
+            is NavResult.Canceled -> {
+
+            }
+
+            is NavResult.Value -> {
+                onSexFilterClicked(Sex.MEN)
+            }
+        }
     }
 
     LaunchedEffect(key1 = eventError) {
@@ -142,7 +162,13 @@ fun HomeScreen(
                 .padding(
                     horizontal = MaterialTheme.spacing.medium,
                     vertical = MaterialTheme.spacing.default
-                )
+                ),
+            onSavedIconClicked = {
+                navigator?.navigate(SavedItemsScreenDestination)
+            },
+            onShoppingBagClicked = {
+                navigator?.navigate(ShoppingBagScreenDestination())
+            }
         )
         Text(
             text = "Discover your",
@@ -208,7 +234,7 @@ fun HomeScreen(
             ) {
                 Image(
                     painter = painterResource(R.drawable.nike_logo),
-                    contentDescription = "Logo"
+                    contentDescription = "Logo",
                 )
                 Spacer(modifier = Modifier.height(5.dp))
                 Text(
@@ -256,19 +282,59 @@ fun HomeScreen(
                                 modifier = Modifier
                                     .padding(end = paddingEnd),
                                 productItem = product,
+                                isInSavedScreen = false,
                                 onSavedIconClick = {
-                                    Toast.makeText(
-                                        context,
-                                        "Item added to watch later list successfully",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
+                                    if (!it.isSaved) {
+                                        Toast.makeText(
+                                            context,
+                                            "Item added to watch later list successfully",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                        viewModel.setEventClicks(
+                                            HomeEvent.OnSavedIconClicked(false, it.id!!)
+                                        )
+                                    } else {
+                                        Toast.makeText(
+                                            context,
+                                            "Item removed from watch later list successfully",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                        viewModel.setEventClicks(
+                                            HomeEvent.OnSavedIconClicked(true, it.id!!)
+                                        )
+                                    }
                                 },
                                 onShoppingIconClick = {
-                                    Toast.makeText(
-                                        context,
-                                        "Item added to shopping card successfully",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
+                                    val orderItem = OrderItemUiModel(
+                                        productId = it.id,
+                                        name = it.name,
+                                        price = it.price,
+                                        photoUrl = it.colorSizeInformation.first().photoUrl,
+                                        colorCode = it.colorSizeInformation.first().colorCode,
+                                        quantity = 1,
+                                        colorName = it.colorSizeInformation.first().colorName,
+                                        size = it.colorSizeInformation.first().sizeUiModel.first().size!!.toInt(),
+                                        sex = it.sex
+                                    )
+                                    if (!it.isInShoppingBag) {
+                                        Toast.makeText(
+                                            context,
+                                            "Item added to shopping list successfully",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                        viewModel.setEventClicks(
+                                            HomeEvent.OnShoppingIconClicked(false, orderItem)
+                                        )
+                                    } else {
+                                        Toast.makeText(
+                                            context,
+                                            "Item removed from shopping list successfully",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                        viewModel.setEventClicks(
+                                            HomeEvent.OnShoppingIconClicked(true, orderItem)
+                                        )
+                                    }
                                 },
                                 onItemClick = {
                                     navigator?.navigate(ProductScreenDestination(it))
@@ -315,7 +381,7 @@ fun HomeScreen(
 }
 
 @Composable
-fun ToolBar(modifier: Modifier) {
+fun ToolBar(modifier: Modifier, onSavedIconClicked: () -> Unit, onShoppingBagClicked: () -> Unit) {
     Row(
         modifier = modifier,
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -340,12 +406,20 @@ fun ToolBar(modifier: Modifier) {
             Icon(
                 painter = painterResource(id = R.drawable.saved_items_not_filled),
                 contentDescription = "saved item icon",
-                modifier = Modifier.size(20.dp)
+                modifier = Modifier
+                    .size(20.dp)
+                    .noRippleClickable {
+                        onSavedIconClicked()
+                    }
             )
             Icon(
                 painter = painterResource(id = R.drawable.shopping_bag),
                 contentDescription = "shopping bag icon",
-                modifier = Modifier.size(MaterialTheme.spacing.semiLarge)
+                modifier = Modifier
+                    .size(MaterialTheme.spacing.semiLarge)
+                    .noRippleClickable {
+                        onShoppingBagClicked()
+                    }
             )
         }
     }

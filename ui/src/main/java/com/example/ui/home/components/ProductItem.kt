@@ -20,6 +20,7 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -39,11 +40,12 @@ import com.example.ui.utils.noRippleClickable
 fun ProductItem(
     modifier: Modifier,
     productItem: ProductItemUiModel,
+    isInSavedScreen: Boolean,
     onSavedIconClick: (ProductItemUiModel) -> Unit,
     onShoppingIconClick: (ProductItemUiModel) -> Unit,
     onItemClick: (id: String) -> Unit
 ) {
-    var isSavedIconClicked by remember { mutableStateOf(false) }
+    var isSavedIconClicked by remember { mutableStateOf(productItem.isSaved) }
     ConstraintLayout(
         modifier = modifier
             .wrapContentSize()
@@ -67,8 +69,9 @@ fun ProductItem(
                     end.linkTo(parent.end)
                 }
                 .noRippleClickable {
-                    isSavedIconClicked = !isSavedIconClicked
                     onSavedIconClick(productItem)
+                    isSavedIconClicked = !isSavedIconClicked
+                    productItem.isSaved = !productItem.isSaved
                 }
         )
         AsyncImage(
@@ -91,6 +94,8 @@ fun ProductItem(
             fontWeight = FontWeight.Bold,
             fontSize = 20.sp,
             color = MaterialTheme.colorScheme.tertiary.copy(0.8f),
+            overflow = TextOverflow.Ellipsis,
+            maxLines = 1,
             modifier = Modifier
                 .padding(MaterialTheme.spacing.medium)
                 .constrainAs(productName) {
@@ -114,26 +119,31 @@ fun ProductItem(
                     start.linkTo(parent.start)
                 }
         )
-        Box(
-            modifier = Modifier
-                .constrainAs(shoppingBox) {
-                    bottom.linkTo(parent.bottom)
-                    end.linkTo(parent.end)
-                }
-                .noRippleClickable { onShoppingIconClick(productItem) }
-                .background(
-                    color = MaterialTheme.colorScheme.primary,
-                    shape = RoundedCornerShape(topStart = 10.dp, bottomEnd = 10.dp)
-                )
-        ) {
-            Icon(
-                painter = painterResource(id = R.drawable.shopping_bag),
-                contentDescription = "shopping icon",
-                tint = MaterialTheme.colorScheme.background,
+        if (!isInSavedScreen) {
+            Box(
                 modifier = Modifier
-                    .align(Alignment.Center)
-                    .padding(MaterialTheme.spacing.medium)
-            )
+                    .constrainAs(shoppingBox) {
+                        bottom.linkTo(parent.bottom)
+                        end.linkTo(parent.end)
+                    }
+                    .noRippleClickable {
+                        onShoppingIconClick(productItem)
+                        productItem.isInShoppingBag = !productItem.isInShoppingBag
+                    }
+                    .background(
+                        color = MaterialTheme.colorScheme.primary,
+                        shape = RoundedCornerShape(topStart = 10.dp, bottomEnd = 10.dp)
+                    )
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.shopping_bag),
+                    contentDescription = "shopping icon",
+                    tint = MaterialTheme.colorScheme.background,
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .padding(MaterialTheme.spacing.medium)
+                )
+            }
         }
     }
 }
@@ -149,6 +159,7 @@ fun ProductItemPreview() {
             name = "Nike Runner",
             description = "",
             price = 34f,
+            isSaved = false,
             peopleRatedCounter = 0,
             rate = 0,
             sex = Sex.MEN,
@@ -168,6 +179,7 @@ fun ProductItemPreview() {
                 )
             )
         ),
+        isInSavedScreen = false,
         onSavedIconClick = {},
         onShoppingIconClick = {},
         onItemClick = {}
