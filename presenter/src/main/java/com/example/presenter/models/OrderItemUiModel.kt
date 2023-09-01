@@ -1,7 +1,9 @@
 package com.example.presenter.models
 
+import androidx.annotation.Keep
 import com.example.core.enums.Sex
 
+@Keep
 data class OrderItemUiModel(
     val productId: String? = null,
     val name: String? = null,

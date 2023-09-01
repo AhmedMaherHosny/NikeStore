@@ -3,6 +3,7 @@ package com.example.remote.repository
 import com.example.core.Constants.COLLECTION_OF_ORDERS
 import com.example.core.Constants.COLLECTION_OF_PRODUCTS
 import com.example.core.Constants.COLLECTION_OF_USERS
+import com.example.core.Constants.DEFAULT_AVATAR_URL
 import com.example.core.enums.ProductCategory
 import com.example.core.enums.Sex
 import com.example.domain.models.AppUserDomainModel
@@ -69,9 +70,16 @@ class FirebaseRepositoryImpl @Inject constructor(
                                 continuation.resumeWithException(task)
                             }
                     } else {
+                        val id = documentSnapshot.getString("id")
+                        val name = documentSnapshot.getString("name")
+                        val password = documentSnapshot.getString("password")
+                        val email = documentSnapshot.getString("email")
+                        val phone = documentSnapshot.getString("phone")
+                        val avatar = documentSnapshot.getString("avatar") ?: DEFAULT_AVATAR_URL
+                        val admin = documentSnapshot.getBoolean("admin") ?: false
                         val appUserRemoteModel =
-                            documentSnapshot.toObject(AppUserRemoteModel::class.java)
-                        continuation.resume(appUserRemoteModel!!.toAppUserDomainModel())
+                            AppUserRemoteModel(id, name, password, email, phone, avatar, admin)
+                        continuation.resume(appUserRemoteModel.toAppUserDomainModel())
                     }
                 }
                 .addOnFailureListener { task ->

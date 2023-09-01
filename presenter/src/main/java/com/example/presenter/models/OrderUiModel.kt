@@ -1,7 +1,9 @@
 package com.example.presenter.models
 
+import androidx.annotation.Keep
 import com.example.core.enums.OrderStatus
 
+@Keep
 data class OrderUiModel(
     val id: String? = null,
     val orders: List<OrderItemUiModel> = listOf(),

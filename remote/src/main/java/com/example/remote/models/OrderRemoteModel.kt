@@ -1,8 +1,10 @@
 package com.example.remote.models
 
+import androidx.annotation.Keep
 import com.example.core.enums.OrderStatus
 import com.example.core.enums.Sex
 
+@Keep
 data class OrderRemoteModel(
     val id: String? = null,
     val userId: String? = null,

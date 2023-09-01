@@ -1,7 +1,9 @@
 package com.example.domain.models
 
+import androidx.annotation.Keep
 import com.example.core.enums.Sex
 
+@Keep
 data class OrderItemDomainModel(
     val productId: String? = null,
     val name: String? = null,

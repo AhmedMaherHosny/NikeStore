@@ -1,5 +1,8 @@
 package com.example.domain.models
 
+import androidx.annotation.Keep
+
+@Keep
 data class AddressDomainModel(
     val id: Long? = null,
     val addressLine1: String? = null,

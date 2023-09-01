@@ -1,8 +1,10 @@
 package com.example.domain.models
 
+import androidx.annotation.Keep
 import com.example.core.enums.Sex
 import com.example.core.enums.ProductCategory
 
+@Keep
 data class ProductItemDomainModel(
     val id: String? = null,
     val name: String? = null,
