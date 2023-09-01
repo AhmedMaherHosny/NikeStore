@@ -558,4 +558,24 @@ class FirebaseRepositoryImpl @Inject constructor(
                     continuation.resumeWithException(exception)
                 }
         }
+
+    override suspend fun logout() = firebaseAuth.signOut()
+
+    override suspend fun updateUserInFireStore(appUserDomainModel: AppUserDomainModel): Unit =
+        suspendCoroutine { continuation ->
+            val usersCollection = firebaseFireStore.collection(COLLECTION_OF_USERS)
+            val userDocument = usersCollection.document(appUserDomainModel.id!!)
+            val updatesMap = mutableMapOf<String, Any>()
+            appUserDomainModel.name?.let { updatesMap["name"] = it }
+            appUserDomainModel.password?.let { updatesMap["password"] = it }
+            appUserDomainModel.email?.let { updatesMap["email"] = it }
+            appUserDomainModel.phone?.let { updatesMap["phone"] = it }
+            userDocument.update(updatesMap)
+                .addOnSuccessListener {
+                    continuation.resume(Unit)
+                }
+                .addOnFailureListener { exception ->
+                    continuation.resumeWithException(exception)
+                }
+        }
 }

@@ -5,11 +5,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.core.Constants.USER_MODEL
 import com.example.core.base.StateErrorType
 import com.example.core.enums.Sex
 import com.example.domain.models.OrderItemDomainModel
 import com.example.domain.usecases.add_product_to_shopping_bag.AddProductToShoppingBagUseCase
+import com.example.domain.usecases.delete_user_datastore.DeleteUserDataFromDatastoreUseCase
 import com.example.domain.usecases.get_products_grouped_by_category_and_sex.GetProductsGroupedByCategoryAndSexUseCase
+import com.example.domain.usecases.logout.LogoutUseCase
 import com.example.domain.usecases.remove_product_from_shopping_bag.RemoveProductFromShoppingBagUseCase
 import com.example.domain.usecases.save_product.SaveProductUseCase
 import com.example.domain.usecases.unsave_product.UnSaveProductUseCase
@@ -43,6 +46,8 @@ class HomeViewModel @Inject constructor(
     private val unSaveProductUseCase: UnSaveProductUseCase,
     private val addProductToShoppingBagUseCase: AddProductToShoppingBagUseCase,
     private val removeProductToShoppingBagUseCase: RemoveProductFromShoppingBagUseCase,
+    private val logoutUseCase: LogoutUseCase,
+    private val deleteUserDataFromDatastoreUseCase: DeleteUserDataFromDatastoreUseCase
 ) : ViewModel() {
     var homeViewState by mutableStateOf(HomeViewState())
     private val _eventError = MutableSharedFlow<StateErrorType>()
@@ -111,6 +116,18 @@ class HomeViewModel @Inject constructor(
                 else
                     removeItemToShoppingList(event.orderItemUiModel.toOrderItemDomainModel())
             }
+
+            HomeEvent.OnLogoutClicked -> {
+                logout()
+            }
+        }
+    }
+
+    private fun logout() {
+        viewModelScope.launch {
+            logoutUseCase()
+            deleteUserDataFromDatastoreUseCase(USER_MODEL)
+            setNavigator { HomeNavigator.NavigateToAuthScreen }
         }
     }
 

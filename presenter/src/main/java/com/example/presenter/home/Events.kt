@@ -6,6 +6,7 @@ import com.example.domain.models.OrderItemDomainModel
 import com.example.presenter.models.OrderItemUiModel
 
 sealed class HomeEvent : BaseEvent {
+    object OnLogoutClicked : HomeEvent()
     data class OnSexFilterClicked(val sex: Sex) : HomeEvent()
     data class OnSavedIconClicked(val isSaved: Boolean, val productId: String) : HomeEvent()
     data class OnShoppingIconClicked(

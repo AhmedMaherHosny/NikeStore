@@ -136,6 +136,8 @@ fun ShoppingBagScreen(
                             }
                         })
                     }
+
+                    else -> {}
                 }
             }
         }.flowOn(EmptyCoroutineContext).launchIn(this)

@@ -23,6 +23,7 @@ interface FirebaseRepository {
         userId: String,
         orderItemDomainModel: OrderItemDomainModel
     )
-
     suspend fun getProductsFromShoppingBag(userId: String): List<OrderItemDomainModel>
+    suspend fun logout()
+    suspend fun updateUserInFireStore(appUserDomainModel: AppUserDomainModel)
 }
