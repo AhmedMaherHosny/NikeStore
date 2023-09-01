@@ -63,4 +63,8 @@ object Validation {
         return ValidationMessageType.Valid
     }
 
+    fun String.validateNone(): ValidationMessageType {
+        return ValidationMessageType.Valid
+    }
+
 }

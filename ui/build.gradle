@@ -4,6 +4,7 @@ plugins {
     id 'kotlin-kapt'
     id("com.google.dagger.hilt.android")
     id 'com.google.devtools.ksp' version '1.8.21-1.0.11'
+    id 'kotlin-parcelize'
 }
 
 android {
@@ -20,7 +21,8 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
+            //shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
@@ -31,7 +33,9 @@ android {
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_17.toString()
     }
-
+    kotlin {
+        jvmToolchain(17)
+    }
     buildFeatures {
         compose true
     }
@@ -99,4 +103,5 @@ dependencies {
     implementation platform(Libs.firebaseBom)
     implementation(Libs.firebaseAuth)
     implementation(Libs.firebaseAuthGoogle)
+    implementation(Libs.firebaseFirestore)
 }

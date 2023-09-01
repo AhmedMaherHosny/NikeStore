@@ -1,10 +1,9 @@
 package com.example.domain.models
 
+import androidx.annotation.Keep
 import com.example.core.Constants.DEFAULT_AVATAR_URL
-import com.google.firebase.Timestamp
-import java.text.SimpleDateFormat
-import java.util.Locale
 
+@Keep
 data class AppUserDomainModel(
     val id: String? = null,
     val name: String? = null,

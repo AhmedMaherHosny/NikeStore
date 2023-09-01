@@ -1,10 +1,12 @@
 package com.example.remote.models
 
+import androidx.annotation.Keep
 import com.example.core.Constants
 import com.google.firebase.Timestamp
 import java.text.SimpleDateFormat
 import java.util.Locale
 
+@Keep
 data class AppUserRemoteModel(
     val id: String? = null,
     val name: String? = null,

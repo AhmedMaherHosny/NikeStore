@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
 import com.example.core.R
 import com.example.core.validation.Validation.validateEmail
+import com.example.core.validation.Validation.validateNone
 import com.example.core.validation.Validation.validatePassword
 import com.example.core.validation.Validation.validatePhone
 import com.example.core.validation.Validation.validateUsername
@@ -13,7 +14,7 @@ data class InputWrapper(
     var text: MutableState<String> = mutableStateOf(""),
     var isValid: MutableState<Boolean> = mutableStateOf(false),
     var borderColor: Color = Color.Unspecified,
-    val validationType: ValidationType? = ValidationType.USERNAME,
+    val validationType: ValidationType? = ValidationType.NONE,
     val isLogin: Boolean = false
 ) {
     var validationMessageResId: Int = R.string.empty_string
@@ -23,6 +24,7 @@ data class InputWrapper(
             ValidationType.USERNAME -> input.validateUsername().toMessageRes()
             ValidationType.EMAIL -> input.validateEmail().toMessageRes()
             ValidationType.PASSWORD -> input.validatePassword(isLogin).toMessageRes()
+            ValidationType.NONE -> input.validateNone().toMessageRes()
             else -> input.validatePhone().toMessageRes()
         }
         borderColor = if (isValid.value) Color.Unspecified else Color.Red

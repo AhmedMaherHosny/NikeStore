@@ -22,6 +22,7 @@ object Libs {
     const val hiltNavigationCompose = "androidx.hilt:hilt-navigation-compose:${Versions.hiltNavigationCompose}"
     const val hiltAndroidCompiler = "com.google.dagger:hilt-android-compiler:${Versions.hiltAndroidCompiler}"
     const val roomRuntime = "androidx.room:room-runtime:${Versions.roomRuntime}"
+    const val roomKtx = "androidx.room:room-ktx:${Versions.roomKtx}"
     const val roomCompilerAnnotationProcessor  = "androidx.room:room-compiler:${Versions.roomCompilerAnnotationProcessor}"
     const val roomCompilerKsp = "androidx.room:room-compiler:${Versions.roomCompilerKsp}"
     const val roomPaging3 = "androidx.room:room-paging:${Versions.roomPaging3}"
